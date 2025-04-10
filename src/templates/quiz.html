@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Recommendation Quiz</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-3xl font-bold text-center mb-8">Book Recommendation Quiz</h1>
+        
+        <form id="quizForm" class="max-w-2xl mx-auto bg-white p-6 rounded-lg shadow-md">
+            <!-- Age Group Question -->
+            <div class="mb-6">
+                <h2 class="text-xl font-semibold mb-4">1. Who is this book for?</h2>
+                <div class="space-y-2">
+                    <label class="flex items-center">
+                        <input type="radio" name="age_group" value="teen" class="mr-2" required>
+                        A teen/young adult
+                    </label>
+                    <label class="flex items-center">
+                        <input type="radio" name="age_group" value="adult" class="mr-2">
+                        An adult
+                    </label>
+                    <label class="flex items-center">
+                        <input type="radio" name="age_group" value="child" class="mr-2">
+                        A child (elementary/middle school age)
+                    </label>
+                </div>
+            </div>
+
+            <!-- Support Type Question -->
+            <div class="mb-6">
+                <h2 class="text-xl font-semibold mb-4">2. What type of support are you looking for? (Select up to 2)</h2>
+                <div class="space-y-2">
+                    <label class="flex items-center">
+                        <input type="checkbox" name="support_types" value="Healing from past trauma" class="mr-2 support-type">
+                        Healing from past trauma
+                    </label>
+                    <label class="flex items-center">
+                        <input type="checkbox" name="support_types" value="Managing stress" class="mr-2 support-type">
+                        Managing stress
+                    </label>
+                    <label class="flex items-center">
+                        <input type="checkbox" name="support_types" value="Building self-confidence" class="mr-2 support-type">
+                        Building self-confidence
+                    </label>
+                    <label class="flex items-center">
+                        <input type="checkbox" name="support_types" value="Navigating and managing emotions" class="mr-2 support-type">
+                        Navigating and managing emotions
+                    </label>
+                </div>
+                <p id="supportTypeError" class="text-red-500 mt-2 hidden">Please select no more than 2 options</p>
+            </div>
+
+            <!-- Learning Style Question -->
+            <div class="mb-6">
+                <h2 class="text-xl font-semibold mb-4">3. What learning style do you prefer?</h2>
+                <div class="space-y-2">
+                    <label class="flex items-center">
+                        <input type="radio" name="learning_style" value="Stories and personal experiences" class="mr-2" required>
+                        Stories and personal experiences
+                    </label>
+                    <label class="flex items-center">
+                        <input type="radio" name="learning_style" value="Clear, practical advice I can use in my own life" class="mr-2">
+                        Clear, practical advice I can use in my own life
+                    </label>
+                    <label class="flex items-center">
+                        <input type="radio" name="learning_style" value="Interesting science and mental health guidance from experts" class="mr-2">
+                        Interesting science and mental health guidance from experts
+                    </label>
+                    <label class="flex items-center">
+                        <input type="radio" name="learning_style" value="Activities like journaling or mindfulness" class="mr-2">
+                        Activities like journaling or mindfulness
+                    </label>
+                </div>
+            </div>
+
+            <!-- Diverse Communities Question -->
+            <div class="mb-6">
+                <h2 class="text-xl font-semibold mb-4">4. Would you like books that represent diverse communities?</h2>
+                <div class="space-y-2">
+                    <label class="flex items-center">
+                        <input type="radio" name="wants_diverse" value="true" class="mr-2" required>
+                        Yes
+                    </label>
+                    <label class="flex items-center">
+                        <input type="radio" name="wants_diverse" value="false" class="mr-2">
+                        No
+                    </label>
+                </div>
+            </div>
+
+            <!-- Specific Community Question (shown only if wants_diverse is true) -->
+            <div id="specificCommunityDiv" class="mb-6 hidden">
+                <h2 class="text-xl font-semibold mb-4">5. Which community would you like to see represented?</h2>
+                <div class="space-y-2">
+                    <label class="flex items-center">
+                        <input type="radio" name="specific_community" value="Black" class="mr-2">
+                        Black
+                    </label>
+                    <label class="flex items-center">
+                        <input type="radio" name="specific_community" value="Native" class="mr-2">
+                        Native
+                    </label>
+                    <label class="flex items-center">
+                        <input type="radio" name="specific_community" value="Latino" class="mr-2">
+                        Latino
+                    </label>
+                    <label class="flex items-center">
+                        <input type="radio" name="specific_community" value="Middle Eastern" class="mr-2">
+                        Middle Eastern
+                    </label>
+                    <label class="flex items-center">
+                        <input type="radio" name="specific_community" value="2SLGBTQIA+" class="mr-2">
+                        2SLGBTQIA+
+                    </label>
+                    <label class="flex items-center">
+                        <input type="radio" name="specific_community" value="Women" class="mr-2">
+                        Women
+                    </label>
+                </div>
+            </div>
+
+            <button type="submit" class="w-full bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">
+                Get Recommendations
+            </button>
+        </form>
+
+        <div id="recommendations" class="max-w-2xl mx-auto mt-8 hidden">
+            <h2 class="text-2xl font-bold mb-4">Your Top Book Recommendations</h2>
+            <div id="recommendationsList" class="space-y-4 mb-8"></div>
+            
+            <h3 class="text-xl font-bold mb-4">All Books Ranked by Match Score</h3>
+            <div class="overflow-x-auto">
+                <table class="min-w-full bg-white">
+                    <thead>
+                        <tr class="bg-gray-100">
+                            <th class="px-4 py-2 text-left">Rank</th>
+                            <th class="px-4 py-2 text-left">Title</th>
+                            <th class="px-4 py-2 text-left">Match Score</th>
+                            <th class="px-4 py-2 text-left">Details</th>
+                        </tr>
+                    </thead>
+                    <tbody id="allBooksList"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Support type validation
+        const supportTypeCheckboxes = document.querySelectorAll('.support-type');
+        const supportTypeError = document.getElementById('supportTypeError');
+        
+        supportTypeCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', () => {
+                const checkedCount = document.querySelectorAll('.support-type:checked').length;
+                if (checkedCount > 2) {
+                    checkbox.checked = false;
+                    supportTypeError.classList.remove('hidden');
+                    setTimeout(() => {
+                        supportTypeError.classList.add('hidden');
+                    }, 3000);
+                }
+            });
+        });
+
+        // Show/hide specific community question
+        document.querySelectorAll('input[name="wants_diverse"]').forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                const specificCommunityDiv = document.getElementById('specificCommunityDiv');
+                if (e.target.value === 'true') {
+                    specificCommunityDiv.classList.remove('hidden');
+                } else {
+                    specificCommunityDiv.classList.add('hidden');
+                }
+            });
+        });
+
+        document.getElementById('quizForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            try {
+                const formData = new FormData(e.target);
+                console.log('Form data:', Object.fromEntries(formData));
+                
+                const response = await fetch('/recommendations', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'Failed to get recommendations');
+                }
+                
+                const data = await response.json();
+                console.log('Response data:', data);
+                
+                const recommendationsDiv = document.getElementById('recommendations');
+                const recommendationsList = document.getElementById('recommendationsList');
+                const allBooksList = document.getElementById('allBooksList');
+                
+                // Display top recommendations
+                if (data.top_recommendations.length === 0) {
+                    recommendationsList.innerHTML = '<p class="text-red-500">No recommendations found. Please try different preferences.</p>';
+                } else {
+                    recommendationsList.innerHTML = data.top_recommendations.map(book => `
+                        <div class="bg-white p-4 rounded-lg shadow">
+                            <h3 class="text-xl font-semibold">${book.title}</h3>
+                            <p class="text-gray-600">Age Group: ${book.age_group}</p>
+                            <p class="text-gray-600">Support Types: ${book.support_types.join(', ')}</p>
+                            <p class="text-gray-600">Learning Style: ${book.learning_style}</p>
+                            <p class="text-gray-600">Diverse Communities: ${book.diverse_communities.join(', ')}</p>
+                            <p class="text-gray-600">Match Score: ${(book.score * 100).toFixed(1)}%</p>
+                        </div>
+                    `).join('');
+                }
+                
+                // Display all books in a table
+                allBooksList.innerHTML = data.all_books.map((book, index) => `
+                    <tr class="${index % 2 === 0 ? 'bg-gray-50' : 'bg-white'}">
+                        <td class="px-4 py-2">${index + 1}</td>
+                        <td class="px-4 py-2">${book.title}</td>
+                        <td class="px-4 py-2">${(book.score * 100).toFixed(1)}%</td>
+                        <td class="px-4 py-2">
+                            <button onclick="toggleDetails(this, ${index})" class="text-blue-500 hover:text-blue-700">
+                                Show Details
+                            </button>
+                            <div id="details-${index}" class="hidden mt-2">
+                                <p>Age Group: ${book.age_group}</p>
+                                <p>Support Types: ${book.support_types.join(', ')}</p>
+                                <p>Learning Style: ${book.learning_style}</p>
+                                <p>Diverse Communities: ${book.diverse_communities.join(', ')}</p>
+                            </div>
+                        </td>
+                    </tr>
+                `).join('');
+                
+                recommendationsDiv.classList.remove('hidden');
+            } catch (error) {
+                console.error('Error:', error);
+                const recommendationsDiv = document.getElementById('recommendations');
+                const recommendationsList = document.getElementById('recommendationsList');
+                recommendationsList.innerHTML = `<p class="text-red-500">Error: ${error.message}</p>`;
+                recommendationsDiv.classList.remove('hidden');
+            }
+        });
+
+        function toggleDetails(button, index) {
+            const detailsDiv = document.getElementById(`details-${index}`);
+            if (detailsDiv.classList.contains('hidden')) {
+                detailsDiv.classList.remove('hidden');
+                button.textContent = 'Hide Details';
+            } else {
+                detailsDiv.classList.add('hidden');
+                button.textContent = 'Show Details';
+            }
+        }
+    </script>
+</body>
+</html> 
