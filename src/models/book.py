@@ -1,5 +1,9 @@
 from dataclasses import dataclass
 from typing import Set
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 @dataclass
 class Book:
@@ -38,19 +42,29 @@ class Book:
         """
         score = 0.0
         
+        logger.info(f"\nScoring book: {self.title}")
+        logger.info(f"Quiz answers: age={quiz_answers.age_group}, support={quiz_answers.support_types}, style={quiz_answers.learning_style}")
+        logger.info(f"Diverse: wants={quiz_answers.wants_diverse}, community={quiz_answers.specific_community}")
+        logger.info(f"Book communities: {self.diverse_communities}")
+        
         # Age group match (1 point) - mandatory filter
         if self.age_group.lower() == quiz_answers.age_group.lower():
             score += 1.0
+            logger.info("Age group match: +1.0")
         else:
-            return 0.0  # Return 0 if age group doesn't match
+            logger.info("Age group mismatch: returning 0")
+            return 0.0
             
         # Support type matches (1 point if any match)
-        if self.support_types.intersection(quiz_answers.support_types):
+        matches = self.support_types.intersection(quiz_answers.support_types)
+        if matches:
             score += 1.0
+            logger.info(f"Support type matches {matches}: +1.0")
         
         # Learning style match (1 point)
         if self.learning_style == quiz_answers.learning_style:
             score += 1.0
+            logger.info("Learning style match: +1.0")
             
         # Diverse communities match
         if quiz_answers.wants_diverse:
@@ -58,10 +72,15 @@ class Book:
                 # Only give point for exact community match
                 if quiz_answers.specific_community in self.diverse_communities:
                     score += 1.0
+                    logger.info(f"Specific community match ({quiz_answers.specific_community}): +1.0")
+                else:
+                    logger.info(f"No specific community match for {quiz_answers.specific_community}")
             else:
                 # Only give point for general representation if no specific community requested
                 if "General" in self.diverse_communities:
                     score += 1.0
-            
-        # Normalize to 0-1 range
-        return score / 4.0 
+                    logger.info("General representation match: +1.0")
+        
+        final_score = score / 4.0
+        logger.info(f"Final score: {final_score}\n")
+        return final_score 
