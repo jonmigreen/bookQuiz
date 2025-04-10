@@ -22,14 +22,13 @@ class Book:
         """Calculate how well this book matches the user's preferences.
         
         Scoring breakdown:
-        - Age group match: 1 point
-        - Support type matches: 1 point each (max 2 points)
+        - Age group match: 1 point (mandatory filter)
+        - Support type matches: 1 point if any match
         - Learning style match: 1 point
         - Diverse communities match: 1 point for specific community match,
-          0.25 points for general representation if diverse is desired,
-          0.5 points if general representation is acceptable without specific community
+          0 points for general representation if specific community desired
         
-        The final score is normalized to a 0-1 range by dividing by 5.0.
+        The final score is normalized to a 0-1 range by dividing by 4.0.
         
         Args:
             quiz_answers (QuizAnswers): The user's quiz answers
@@ -39,13 +38,15 @@ class Book:
         """
         score = 0.0
         
-        # Age group match (1 point)
+        # Age group match (1 point) - mandatory filter
         if self.age_group.lower() == quiz_answers.age_group.lower():
             score += 1.0
+        else:
+            return 0.0  # Return 0 if age group doesn't match
             
-        # Support type matches (1 point each, max 2 points)
-        support_matches = len(self.support_types.intersection(quiz_answers.support_types))
-        score += min(support_matches, 2.0)  # Cap at 2 points
+        # Support type matches (1 point if any match)
+        if self.support_types.intersection(quiz_answers.support_types):
+            score += 1.0
         
         # Learning style match (1 point)
         if self.learning_style == quiz_answers.learning_style:
@@ -53,12 +54,14 @@ class Book:
             
         # Diverse communities match
         if quiz_answers.wants_diverse:
-            if quiz_answers.specific_community and quiz_answers.specific_community in self.diverse_communities:
-                score += 1.0  # Exact match for specific community
-            elif "General" in self.diverse_communities:
-                score += 0.25  # General representation if specific community desired
-        elif "General" in self.diverse_communities:
-            score += 0.5  # General representation is acceptable
+            if quiz_answers.specific_community:
+                # Only give point for exact community match
+                if quiz_answers.specific_community in self.diverse_communities:
+                    score += 1.0
+            else:
+                # Only give point for general representation if no specific community requested
+                if "General" in self.diverse_communities:
+                    score += 1.0
             
         # Normalize to 0-1 range
-        return score / 5.0 
+        return score / 4.0 
