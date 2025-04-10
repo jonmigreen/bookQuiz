@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, jsonify
 from pathlib import Path
+import os
 from .models.quiz import QuizAnswers
 from .services.recommendation_service import RecommendationService
 from .utils.data_loader import DataLoader
@@ -35,5 +36,8 @@ def get_recommendations():
         print(f"Error processing recommendations: {str(e)}")
         return jsonify({"error": str(e)}), 500
 
+# Get port from environment variable or default to 5000
+port = int(os.environ.get("PORT", 5000))
+
 if __name__ == '__main__':
-    app.run(debug=True, port=5001) 
+    app.run(host='0.0.0.0', port=port) 
