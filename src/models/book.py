@@ -27,10 +27,11 @@ class Book:
         
         Scoring breakdown:
         - Age group match: 1 point (mandatory filter)
-        - Support type matches: 1 point if any match
+        - Support type matches: 0.5 points per match (max 1 point for 2 matches)
         - Learning style match: 1 point
         - Diverse communities match: 1 point for specific community match,
-          0 points for general representation if specific community desired
+          0.25 points for general representation if diverse is desired,
+          0.5 points if general representation is acceptable
         
         The final score is normalized to a 0-1 range by dividing by 4.0.
         
@@ -55,11 +56,12 @@ class Book:
             logger.info("Age group mismatch: returning 0")
             return 0.0
             
-        # Support type matches (1 point if any match)
+        # Support type matches (0.5 points per match, max 1 point)
         matches = self.support_types.intersection(quiz_answers.support_types)
-        if matches:
-            score += 1.0
-            logger.info(f"Support type matches {matches}: +1.0")
+        support_score = min(len(matches) * 0.5, 1.0)  # Cap at 1.0 point
+        if support_score > 0:
+            score += support_score
+            logger.info(f"Support type matches {matches}: +{support_score}")
         
         # Learning style match (1 point)
         if self.learning_style == quiz_answers.learning_style:
@@ -76,10 +78,10 @@ class Book:
                 else:
                     logger.info(f"No specific community match for {quiz_answers.specific_community}")
             else:
-                # Only give point for general representation if no specific community requested
+                # Give points for general representation if no specific community requested
                 if "General" in self.diverse_communities:
-                    score += 1.0
-                    logger.info("General representation match: +1.0")
+                    score += 0.5
+                    logger.info("General representation match: +0.5")
         
         final_score = score / 4.0
         logger.info(f"Final score: {final_score}\n")

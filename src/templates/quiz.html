@@ -10,6 +10,47 @@
     <div class="container mx-auto px-4 py-8">
         <h1 class="text-3xl font-bold text-center mb-8">Book Recommendation Quiz</h1>
         
+        <!-- Information Section -->
+        <div class="max-w-2xl mx-auto bg-white p-6 rounded-lg shadow-md mb-8">
+            <button id="infoToggle" class="w-full text-left text-xl font-semibold mb-4 flex justify-between items-center">
+                <span>How the Scoring Works</span>
+                <span id="infoToggleIcon">▼</span>
+            </button>
+            <div id="infoContent" class="hidden">
+                <div class="space-y-4">
+                    <div>
+                        <h3 class="font-semibold">1. Age Group (1 point)</h3>
+                        <p class="text-gray-600">Books are first filtered to match the selected age group. Only books matching the age group will be recommended.</p>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold">2. Support Types (0.5 points per match, max 1 point)</h3>
+                        <p class="text-gray-600">Each matching support type adds 0.5 points to the score. For example:</p>
+                        <ul class="list-disc ml-6 text-gray-600">
+                            <li>1 matching support type = 0.5 points</li>
+                            <li>2 matching support types = 1.0 points</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold">3. Learning Style (1 point)</h3>
+                        <p class="text-gray-600">Books matching the selected learning style receive 1 point.</p>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold">4. Diverse Communities (1 point)</h3>
+                        <p class="text-gray-600">If a specific community is selected, books representing that community receive 1 point. If no specific community is selected but diverse representation is desired, books with general representation receive 0.5 points.</p>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded">
+                        <h3 class="font-semibold">Final Score Calculation</h3>
+                        <p class="text-gray-600">The total score is divided by 4.0 to normalize it to a 0-1 range (0-100%). For example:</p>
+                        <ul class="list-disc ml-6 text-gray-600">
+                            <li>Perfect match (4 points) = 100%</li>
+                            <li>Good match (3 points) = 75%</li>
+                            <li>Partial match (2 points) = 50%</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
         <form id="quizForm" class="max-w-2xl mx-auto bg-white p-6 rounded-lg shadow-md">
             <!-- Age Group Question -->
             <div class="mb-6">
@@ -150,6 +191,16 @@
     </div>
 
     <script>
+        // Information section toggle
+        const infoToggle = document.getElementById('infoToggle');
+        const infoContent = document.getElementById('infoContent');
+        const infoToggleIcon = document.getElementById('infoToggleIcon');
+        
+        infoToggle.addEventListener('click', () => {
+            infoContent.classList.toggle('hidden');
+            infoToggleIcon.textContent = infoContent.classList.contains('hidden') ? '▼' : '▲';
+        });
+
         // Support type validation
         const supportTypeCheckboxes = document.querySelectorAll('.support-type');
         const supportTypeError = document.getElementById('supportTypeError');

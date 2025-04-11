@@ -4,6 +4,8 @@ import os
 from .models.quiz import QuizAnswers
 from .services.recommendation_service import RecommendationService
 from .utils.data_loader import DataLoader
+import signal
+import sys
 
 app = Flask(__name__)
 
@@ -38,6 +40,12 @@ def get_recommendations():
 
 # Get port from environment variable or default to 5000
 port = int(os.environ.get("PORT", 5000))
+
+def signal_handler(sig, frame):
+    print('\nShutting down gracefully...')
+    sys.exit(0)
+
+signal.signal(signal.SIGINT, signal_handler)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=port) 
